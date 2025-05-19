@@ -4,15 +4,7 @@ export default function Header() {
   return (
     <header className="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
       <div className="flex items-center">
-        <h1 className="text-xl font-bold text-blue-600">Mini Facebook</h1>
-        <div className="ml-4 flex space-x-2">
-          <button className="p-2 rounded-full hover:bg-gray-100">
-            <svg className="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-          </button>
-          <button className="p-2 rounded-full hover:bg-gray-100">
-            <svg className="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path></svg>
-          </button>
-        </div>
+        <h1 className="text-xl font-bold text-blue-600">Locabook</h1>
       </div>
       <div className="flex-1 max-w-xl mx-4">
         <div className="relative">
@@ -21,6 +13,8 @@ export default function Header() {
         </div>
       </div>
       <div className="flex items-center space-x-2">
+      <button className="p-2 bg-gray-200 rounded-full">
+      <svg className="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>        </button>
         <button className="p-2 bg-gray-200 rounded-full">
           <svg className="w-6 h-6 text-gray-700" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
         </button>
