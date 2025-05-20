@@ -139,6 +139,7 @@ export default function Feed() {
             <span>Photo/Vidéo</span>
           </button>
         </div>
+        
       </div>
 
       {/* Post Form Modal */}
@@ -446,78 +447,108 @@ export default function Feed() {
       {/* Posts */}
       <div className="space-y-4">
         {posts.map(post => (
-          <div key={post.id} className="bg-white rounded-lg shadow">
+          <div key={post.id} className="bg-white rounded-lg shadow overflow-hidden relative">
+            <button 
+              onClick={() => handleSavePost(post.id)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-blue-600 bg-white rounded-full p-1 shadow"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+              </svg>
+            </button>
+            
             <div className="p-4">
-              <div className="flex items-center space-x-2 mb-3">
+              <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
                   <img src={post.avatar} alt={post.author} className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <div className="font-semibold">{post.author}</div>
+                  <div className="font-medium">{post.author}</div>
                   <div className="text-xs text-gray-500">{post.time}</div>
                 </div>
               </div>
-              <p className="mb-3">{post.content}</p>
-              
-              {/* Media container avec hauteur fixe */}
-              {(post.image || post.video) && (
-                <div className="rounded-lg overflow-hidden mb-3 relative" style={{ maxHeight: '400px' }}>
-                  {post.image && (
-                    <img 
-                      src={post.image} 
-                      alt="Post" 
-                      className="w-full h-full object-contain bg-black" 
-                    />
-                  )}
-                  {post.video && (
-                    <video 
-                      src={post.video} 
-                      controls 
-                      className="w-full h-full object-contain bg-black"
-                    ></video>
-                  )}
-                </div>
-              )}
-              
-              {/* Affichage des détails de l'annonce */}
-              {post.details && (
-                <div className="bg-gray-50 p-3 rounded-lg mb-3 text-sm">
-                  <div className="grid grid-cols-2 gap-2">
-                    <div><span className="font-medium">Type:</span> {post.details.postType}</div>
-                    <div><span className="font-medium">Prix:</span> {post.details.price}€/mois</div>
-                    <div><span className="font-medium">Surface:</span> {post.details.area}m²</div>
-                    <div><span className="font-medium">Pièces:</span> {post.details.rooms}</div>
-                    <div><span className="font-medium">Durée:</span> {post.details.durationType === 'courte' ? 'Courte durée' : 'Longue durée'}</div>
-                    <div><span className="font-medium">État:</span> {post.details.furnishingStatus === 'equipped' ? 'Meublé' : 'Non meublé'}</div>
+              <p className="mt-3">{post.content}</p>
+            </div>
+            
+            {(post.image || post.video) && (
+              <div className="relative">
+                {post.image && (
+                  <img src={post.image} alt="" className="w-full h-64 object-cover" />
+                )}
+                {post.video && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <button className="bg-white bg-opacity-75 rounded-full p-3">
+                      <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
+                      </svg>
+                    </button>
                   </div>
-                  {post.details.amenities.length > 0 && (
-                    <div className="mt-2">
-                      <span className="font-medium">Équipements:</span> {post.details.amenities.join(', ')}
+                )}
+              </div>
+            )}
+            
+            <div className="p-4 border-t border-gray-100">
+              <div className="flex space-x-4">
+                <div className="flex items-center space-x-1 text-gray-500">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
+                  </svg>
+                  <span>{post.likes}</span>
+                </div>
+                <div className="flex items-center space-x-1 text-gray-500">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
+                  </svg>
+                  <span>{post.comments}</span>
+                </div>
+              </div>
+              
+              {post.details && (
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <div className="flex flex-wrap gap-2">
+                    {post.details.postType && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {post.details.postType}
+                      </span>
+                    )}
+                    {post.details.location && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        {post.details.location}
+                      </span>
+                    )}
+                    {post.details.price && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        {post.details.price}€{post.details.durationType === "monthly" ? "/mois" : ""}
+                      </span>
+                    )}
+                    {post.details.area && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        {post.details.area}m²
+                      </span>
+                    )}
+                    {post.details.rooms && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        {post.details.rooms} pièces
+                      </span>
+                    )}
+                    {post.details.furnishingStatus && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        {post.details.furnishingStatus === 'equipped' ? 'Meublé' : 'Non meublé'}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {post.details.amenities && post.details.amenities.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {post.details.amenities.map((amenity, index) => (
+                        <span key={index} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-50 text-gray-600">
+                          {amenity}
+                        </span>
+                      ))}
                     </div>
                   )}
                 </div>
               )}
-              
-              <div className="flex justify-between text-gray-500 text-sm">
-                <div>{post.likes} J'aime</div>
-                <div>{post.comments} commentaires</div>
-              </div>
-            </div>
-            <div className="border-t px-4 py-2">
-              <div className="flex justify-around">
-                <button className="flex items-center space-x-1 text-gray-600 hover:bg-gray-100 px-2 py-1 rounded">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path></svg>
-                  <span>J'aime</span>
-                </button>
-                <button className="flex items-center space-x-1 text-gray-600 hover:bg-gray-100 px-2 py-1 rounded">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path></svg>
-                  <span>Commenter</span>
-                </button>
-                <button className="flex items-center space-x-1 text-gray-600 hover:bg-gray-100 px-2 py-1 rounded">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path></svg>
-                  <span>Partager</span>
-                </button>
-              </div>
             </div>
           </div>
         ))}

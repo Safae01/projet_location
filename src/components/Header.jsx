@@ -3,7 +3,8 @@ import React from 'react';
 export default function Header() {
   return (
     <header className="bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-10">
-      <div className="flex items-center">
+      <div className="flex items-center space-x-2">
+        <img src="public/logo.png" alt="Locabook Logo" className="w-8 h-8" />
         <h1 className="text-xl font-bold text-blue-600">Locabook</h1>
       </div>
       <div className="flex-1 max-w-xl mx-4">

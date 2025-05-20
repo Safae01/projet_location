@@ -1,17 +1,62 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Feed from './components/Feed';
 import Contacts from './components/Contacts';
+import FollowersList from './components/FollowersList';
+import FollowingList from './components/FollowingList';
+import GroupsList from './components/GroupsList';
+import VideoReels from './components/VideoReels';
+import SavedPosts from './components/SavedPosts';
+import Recommendations from './components/Recommendations';
 
 export default function App() {
+  const [currentView, setCurrentView] = useState('feed');
+
+  const handleShowFollowers = () => {
+    setCurrentView('followers');
+  };
+
+  const handleShowFollowing = () => {
+    setCurrentView('following');
+  };
+
+  const handleShowGroups = () => {
+    setCurrentView('groups');
+  };
+
+  const handleShowVideos = () => {
+    setCurrentView('videos');
+  };
+  
+  const handleShowSavedPosts = () => {
+    setCurrentView('savedPosts');
+  };
+  
+  const handleShowRecommendations = () => {
+    setCurrentView('recommendations');
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <Header />
       <div className="flex flex-1 bg-gray-100">
-        <Sidebar />
-        <Feed />
-        <Contacts />
+        <Sidebar 
+          onShowFollowers={handleShowFollowers} 
+          onShowFollowing={handleShowFollowing}
+          onShowGroups={handleShowGroups}
+          onShowVideos={handleShowVideos}
+          onShowSavedPosts={handleShowSavedPosts}
+          onShowRecommendations={handleShowRecommendations}
+        />
+        {currentView === 'followers' && <FollowersList />}
+        {currentView === 'following' && <FollowingList />}
+        {currentView === 'groups' && <GroupsList />}
+        {currentView === 'videos' && <VideoReels />}
+        {currentView === 'savedPosts' && <SavedPosts />}
+        {currentView === 'recommendations' && <Recommendations />}
+        {currentView === 'feed' && <Feed />}
+        {currentView !== 'videos' && <Contacts />}
       </div>
     </div>
   );
