@@ -9,9 +9,14 @@ import GroupsList from './components/GroupsList';
 import VideoReels from './components/VideoReels';
 import SavedPosts from './components/SavedPosts';
 import Recommendations from './components/Recommendations';
+import ProfilePage from './components/ProfilePage';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('feed');
+
+  const handleShowProfile = () => {
+    setCurrentView('profile');
+  };
 
   const handleShowFollowers = () => {
     setCurrentView('followers');
@@ -37,26 +42,38 @@ export default function App() {
     setCurrentView('recommendations');
   };
 
+  const handleShowFeed = () => {
+    setCurrentView('feed');
+  };
+
   return (
     <div className="flex flex-col h-screen">
-      <Header />
-      <div className="flex flex-1 bg-gray-100">
-        <Sidebar 
-          onShowFollowers={handleShowFollowers} 
-          onShowFollowing={handleShowFollowing}
-          onShowGroups={handleShowGroups}
-          onShowVideos={handleShowVideos}
-          onShowSavedPosts={handleShowSavedPosts}
-          onShowRecommendations={handleShowRecommendations}
-        />
-        {currentView === 'followers' && <FollowersList />}
-        {currentView === 'following' && <FollowingList />}
-        {currentView === 'groups' && <GroupsList />}
-        {currentView === 'videos' && <VideoReels />}
-        {currentView === 'savedPosts' && <SavedPosts />}
-        {currentView === 'recommendations' && <Recommendations />}
-        {currentView === 'feed' && <Feed />}
-        {currentView !== 'videos' && <Contacts />}
+      <Header onShowProfile={handleShowProfile} onShowFeed={handleShowFeed} />
+      <div className="flex flex-1 bg-gray-100 overflow-hidden">
+        {currentView !== 'profile' && (
+          <Sidebar 
+            onShowProfile={handleShowProfile}
+            onShowFollowers={handleShowFollowers} 
+            onShowFollowing={handleShowFollowing}
+            onShowGroups={handleShowGroups}
+            onShowVideos={handleShowVideos}
+            onShowSavedPosts={handleShowSavedPosts}
+            onShowRecommendations={handleShowRecommendations}
+          />
+        )}
+        
+        <div className="flex-1 overflow-y-auto">
+          {currentView === 'profile' && <ProfilePage />}
+          {currentView === 'followers' && <FollowersList />}
+          {currentView === 'following' && <FollowingList />}
+          {currentView === 'groups' && <GroupsList />}
+          {currentView === 'videos' && <VideoReels />}
+          {currentView === 'savedPosts' && <SavedPosts />}
+          {currentView === 'recommendations' && <Recommendations />}
+          {currentView === 'feed' && <Feed />}
+        </div>
+        
+        {currentView !== 'profile' && currentView !== 'videos' && <Contacts />}
       </div>
     </div>
   );

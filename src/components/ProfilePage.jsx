@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function Feed() {
+export default function ProfilePage() {
+  const [showMiniHeader, setShowMiniHeader] = useState(false);
   const [showPostForm, setShowPostForm] = useState(false);
   const [postType, setPostType] = useState('');
   const [location, setLocation] = useState('');
@@ -12,42 +13,36 @@ export default function Feed() {
   const [amenities, setAmenities] = useState([]);
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      author: 'Marie Dupont',
-      avatar: 'https://via.placeholder.com/40',
-      time: 'il y a 2h',
-      content: 'Bonjour à tous ! Voici une photo de mon dernier voyage.',
-      image: 'https://via.placeholder.com/600x400',
-      likes: 42,
-      comments: 8,
-      details: {
-        postType: 'Appartement',
-        location: 'Paris 7ème',
-        price: '1200',
-        area: '45',
-        durationType: 'monthly'
-      }
-    },
-    {
-      id: 2,
-      author: 'Thomas Martin',
-      avatar: 'https://via.placeholder.com/40',
-      time: 'il y a 5h',
-      content: 'Je viens de terminer ce projet incroyable !',
-      image: 'https://via.placeholder.com/600x400',
-      likes: 23,
-      comments: 5,
-      details: {
-        postType: 'Maison',
-        location: 'Lyon Centre',
-        price: '950',
-        area: '80',
-        durationType: 'monthly'
-      }
+  
+  const userProfile = {
+    name: "Votre Nom",
+    username: "@votrenom",
+    coverPhoto: "https://via.placeholder.com/1200x300",
+    avatar: "https://via.placeholder.com/150",
+    bio: "Développeur web passionné | Amateur de photographie | Voyageur",
+    location: "Paris, France",
+    joinDate: "Membre depuis Janvier 2023",
+    stats: {
+      posts: 42,
+      followers: 128,
+      following: 97
     }
-  ]);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) {
+        setShowMiniHeader(true);
+      } else {
+        setShowMiniHeader(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const handleAmenityToggle = (amenity) => {
     if (amenities.includes(amenity)) {
@@ -78,8 +73,8 @@ export default function Feed() {
     // Créer une nouvelle annonce
     const newPost = {
       id: Date.now(), // Utiliser timestamp comme ID unique
-      author: 'Votre Nom', // Remplacer par le nom de l'utilisateur connecté
-      avatar: 'https://via.placeholder.com/40',
+      author: userProfile.name, // Nom de l'utilisateur connecté
+      avatar: userProfile.avatar,
       time: 'à l\'instant',
       content: `${postType} à ${location} - ${price}€/mois - ${area}m² - ${rooms} pièces - ${furnishingStatus === 'equipped' ? 'Meublé' : 'Non meublé'}`,
       image: images.length > 0 ? images[0] : null,
@@ -99,8 +94,7 @@ export default function Feed() {
       }
     };
     
-    // Ajouter le nouveau post au début de la liste
-    setPosts([newPost, ...posts]);
+    console.log("Nouvelle annonce créée:", newPost);
     
     // Réinitialiser le formulaire
     setShowPostForm(false);
@@ -117,46 +111,22 @@ export default function Feed() {
   };
 
   return (
-    <main className="flex-1 p-4 overflow-y-auto">
-      {/* Stories */}
-      <div className="flex space-x-2 overflow-x-auto pb-4 mb-4">
-        {[1, 2, 3, 4, 5, 6].map(i => (
-          <div key={i} className="flex-shrink-0 w-32 h-48 rounded-xl bg-gray-300 relative overflow-hidden">
-            <img src={`https://via.placeholder.com/150?text=Story${i}`} className="absolute inset-0 w-full h-full object-cover" alt="Story" />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-              <div className="text-white text-xs font-medium">Histoire {i}</div>
+    <main className="flex-1 overflow-y-auto bg-gray-100 relative">
+      {/* Mini header qui apparaît lors du défilement */}
+      {showMiniHeader && (
+        <div className="fixed top-16 left-0 right-0 bg-white shadow-md py-2 px-4 z-10 flex items-center justify-between">
+          <div className="w-8"></div> {/* Espace pour équilibrer */}
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-full overflow-hidden">
+              <img src={userProfile.avatar} alt={userProfile.name} className="w-full h-full object-cover" />
             </div>
-            <div className="absolute top-2 left-2 w-8 h-8 rounded-full border-4 border-blue-500 bg-gray-200"></div>
+            <h2 className="font-medium">{userProfile.name}</h2>
           </div>
-        ))}
-      </div>
-
-      {/* Create Post */}
-      <div className="bg-white p-4 rounded-lg shadow mb-4">
-        <div className="flex items-center space-x-2 mb-3">
-          <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-            <img src="https://via.placeholder.com/40" alt="Profile" className="w-full h-full object-cover" />
-          </div>
-          <input 
-            className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm" 
-            placeholder="Ajoutez votre annonce immobilière..." 
-            onClick={() => setShowPostForm(true)}
-            readOnly
-          />
+          <div className="w-8"></div> {/* Espace pour équilibrer */}
         </div>
-        <div className="border-t pt-3 flex justify-center">
-          <button 
-            className="flex items-center space-x-1 text-gray-600 hover:bg-gray-100 px-2 py-1 rounded"
-            onClick={() => setShowPostForm(true)}
-          >
-            <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4a.5.5 0 01-.5-.5V5.5A.5.5 0 014 5h12a.5.5 0 01.5.5v9.5a.5.5 0 01-.5.5z" clipRule="evenodd"></path></svg>
-            <span>Photo/Vidéo</span>
-          </button>
-        </div>
-        
-      </div>
+      )}
 
-      {/* Post Form Modal */}
+      {/* Post Form Modal - Exactement comme dans Feed */}
       {showPostForm && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl max-h-[80vh] overflow-y-auto">
@@ -179,11 +149,11 @@ export default function Feed() {
                 {/* Bloc utilisateur */}
                 <div className="flex items-center space-x-3 bg-blue-50 p-4 rounded-xl border border-blue-100">
                   <div className="w-12 h-12 rounded-full bg-gray-300 overflow-hidden border-2 border-blue-300">
-                    <img src="https://via.placeholder.com/40" alt="Profile" className="w-full h-full object-cover" />
+                    <img src={userProfile.avatar} alt="Profile" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <div className="font-semibold text-gray-800 flex items-center">
-                      Votre Nom
+                      {userProfile.name}
                       <svg className="w-5 h-5 text-blue-500 ml-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                       </svg>
@@ -334,27 +304,68 @@ export default function Feed() {
                 
                 {/* Équipements */}
                 <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-700">Équipements disponibles</label>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-blue-200 transition-colors">
-                    <div className="grid grid-cols-2 gap-3">
-                      {['Wi-Fi', 'Cuisine équipée', 'Lave-linge', 'Sèche-linge', 'Parking', 'Balcon', 'Terrasse', 'Ascenseur'].map(amenity => (
-                        <label key={amenity} className="inline-flex items-center p-2 rounded-lg hover:bg-blue-50 transition-colors">
-                          <input 
-                            type="checkbox" 
-                            className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                            checked={amenities.includes(amenity)}
-                            onChange={() => handleAmenityToggle(amenity)}
-                          />
-                          <span className="ml-2 text-gray-700">{amenity}</span>
-                        </label>
-                      ))}
-                    </div>
+                  <label className="block text-sm font-medium text-gray-700">Équipements</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <label className={`flex items-center space-x-2 ${amenities.includes('wifi') ? 'text-blue-600' : 'text-gray-600'}`}>
+                      <input 
+                        type="checkbox" 
+                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        checked={amenities.includes('wifi')}
+                        onChange={() => handleAmenityToggle('wifi')}
+                      />
+                      <span>Wi-Fi</span>
+                    </label>
+                    <label className={`flex items-center space-x-2 ${amenities.includes('parking') ? 'text-blue-600' : 'text-gray-600'}`}>
+                      <input 
+                        type="checkbox" 
+                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        checked={amenities.includes('parking')}
+                        onChange={() => handleAmenityToggle('parking')}
+                      />
+                      <span>Parking</span>
+                    </label>
+                    <label className={`flex items-center space-x-2 ${amenities.includes('garage') ? 'text-blue-600' : 'text-gray-600'}`}>
+                      <input 
+                        type="checkbox" 
+                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        checked={amenities.includes('garage')}
+                        onChange={() => handleAmenityToggle('garage')}
+                      />
+                      <span>Garage</span>
+                    </label>
+                    <label className={`flex items-center space-x-2 ${amenities.includes('terrasse') ? 'text-blue-600' : 'text-gray-600'}`}>
+                      <input 
+                        type="checkbox" 
+                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        checked={amenities.includes('terrasse')}
+                        onChange={() => handleAmenityToggle('terrasse')}
+                      />
+                      <span>Terrasse</span>
+                    </label>
+                    <label className={`flex items-center space-x-2 ${amenities.includes('ascenseur') ? 'text-blue-600' : 'text-gray-600'}`}>
+                      <input 
+                        type="checkbox" 
+                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        checked={amenities.includes('ascenseur')}
+                        onChange={() => handleAmenityToggle('ascenseur')}
+                      />
+                      <span>Ascenseur</span>
+                    </label>
+                    <label className={`flex items-center space-x-2 ${amenities.includes('salleDeSport') ? 'text-blue-600' : 'text-gray-600'}`}>
+                      <input 
+                        type="checkbox" 
+                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        checked={amenities.includes('salleDeSport')}
+                        onChange={() => handleAmenityToggle('salleDeSport')}
+                      />
+                      <span>Salle de sport</span>
+                    </label>
                   </div>
                 </div>
                 
                 {/* Images */}
                 <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-700">Images (obligatoire)</label>
+                  <label className="block text-sm font-medium text-gray-700">Images</label>
                   <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-blue-400 transition-colors">
                     <div className="space-y-1 text-center">
                       <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -391,7 +402,9 @@ export default function Feed() {
                               className="opacity-0 group-hover:opacity-100 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none transition-opacity"
                               onClick={() => setImages(images.filter((_, i) => i !== index))}
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
                             </button>
                           </div>
                         </div>
@@ -402,7 +415,7 @@ export default function Feed() {
                 
                 {/* Vidéo */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Vidéo (obligatoire)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Vidéo</label>
                   <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed hover:border-blue-400 rounded-md">
                     <div className="space-y-1 text-center">
                       <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -411,7 +424,7 @@ export default function Feed() {
                       <div className="flex text-sm text-gray-600">
                         <label htmlFor="video-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
                           <span>Télécharger une vidéo</span>
-                          <input id="video-upload" name="video-upload" type="file" className="sr-only" accept="video/*" onChange={handleVideoUpload} required={!video} />
+                          <input id="video-upload" name="video-upload" type="file" className="sr-only" accept="video/*" onChange={handleVideoUpload} />
                         </label>
                         <p className="pl-1">ou glisser-déposer</p>
                       </div>
@@ -426,140 +439,239 @@ export default function Feed() {
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
                         onClick={() => setVideo(null)}
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                       </button>
                     </div>
                   )}
                 </div>
-                
-                
-                
-                {/* Boutons d'action */}
-                <div className="flex justify-center space-x-3 pt-6 border-t border-gray-200">
-                  <button 
-                    type="submit" 
-                    className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    Publier
-                  </button>
-                </div>
+              </div>
+              
+              {/* Bouton de soumission */}
+              <div className="flex justify-end">
+                <button 
+                  type="submit" 
+                  className="w-full py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Publier
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* Posts */}
-      <div className="space-y-4">
-        {posts.map(post => (
-          <div key={post.id} className="bg-white rounded-lg shadow overflow-hidden relative">
-            <button 
-              onClick={() => handleSavePost(post.id)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-blue-600 bg-white rounded-full p-1 shadow"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
-              </svg>
-            </button>
-            
-            <div className="p-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-                  <img src={post.avatar} alt={post.author} className="w-full h-full object-cover" />
-                </div>
-                <div>
-                  <div className="font-medium">{post.author}</div>
-                  <div className="text-xs text-gray-500">{post.time}</div>
-                </div>
-              </div>
-              
-              {post.details && (
-                <div className="mt-3 mb-3 py-2 border-y border-gray-100">
-                  <div className="flex flex-wrap gap-2">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {post.details.postType}
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                      {post.details.location}
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {post.details.price}€/mois
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                      {post.details.area}m²
-                    </span>
-                  </div>
-                </div>
-              )}
-              
-              <p className="mt-3">{post.content}</p>
-            </div>
-            
-            {post.image && (
-              <div className="relative">
-                <img src={post.image} alt="" className="w-full h-64 object-cover" />
-                {post.video && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <button className="bg-white bg-opacity-75 rounded-full p-3">
-                      <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
-                      </svg>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-            
-            <div className="p-4 border-t border-gray-100">
-              {/* Compteurs */}
-              <div className="flex justify-between text-sm text-gray-500 mb-3">
-                <div className="flex items-center space-x-1">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
-                  </svg>
-                  <span>{post.likes}</span>
-                </div>
-                <div className="flex space-x-4">
-                  <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
-                    </svg>
-                    <span>{post.comments}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
-                    </svg>
-                    <span>Partages</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Boutons d'action */}
-              <div className="flex justify-between border-t pt-3">
-                <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                  <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
-                  </svg>
-                  <span className="text-sm">J'aime</span>
-                </button>
-                <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                  <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
-                  </svg>
-                  <span className="text-sm">Commenter</span>
-                </button>
-                <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                  <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
-                  </svg>
-                  <span className="text-sm">Partager</span>
-                </button>
-              </div>
+      <div className="max-w-4xl mx-auto bg-white shadow-sm">
+        {/* Couverture et photo de profil */}
+        <div className="relative">
+          <div className="h-64 w-full bg-gray-300 overflow-hidden">
+            <img src={userProfile.coverPhoto} alt="Couverture" className="w-full h-full object-cover" />
+          </div>
+          <div className="absolute bottom-0 left-8 transform translate-y-1/2 border-4 border-white rounded-full overflow-hidden shadow-lg">
+            <div className="w-32 h-32 bg-gray-200">
+              <img src={userProfile.avatar} alt={userProfile.name} className="w-full h-full object-cover" />
             </div>
           </div>
-        ))}
+        </div>
+
+        {/* Informations du profil */}
+        <div className="mt-16 px-8">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-bold">{userProfile.name}</h1>
+              <p className="text-gray-500">{userProfile.username}</p>
+            </div>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+              Modifier le profil
+            </button>
+          </div>
+          
+          <p className="mt-4 text-gray-700">{userProfile.bio}</p>
+          
+          <div className="flex items-center mt-2 text-gray-600">
+            <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
+            </svg>
+            <span>{userProfile.location}</span>
+            <span className="mx-2">•</span>
+            <span>{userProfile.joinDate}</span>
+          </div>
+          
+          <div className="flex space-x-6 mt-4 pt-4 border-t">
+            <div>
+              <span className="font-bold">{userProfile.stats.posts}</span>
+              <span className="text-gray-500 ml-1">Publications</span>
+            </div>
+            <div>
+              <span className="font-bold">{userProfile.stats.followers}</span>
+              <span className="text-gray-500 ml-1">Abonnés</span>
+            </div>
+            <div>
+              <span className="font-bold">{userProfile.stats.following}</span>
+              <span className="text-gray-500 ml-1">Abonnements</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Navigation du profil */}
+        <div className="mt-6 border-t">
+          <div className="flex px-4">
+            <button className="px-4 py-3 font-medium text-blue-600 border-b-2 border-blue-600">Publications</button>
+            <button className="px-4 py-3 font-medium text-gray-600 hover:bg-gray-100">abonnés</button>
+            <button className="px-4 py-3 font-medium text-gray-600 hover:bg-gray-100">suivi(e)s</button>
+            <button className="px-4 py-3 font-medium text-gray-600 hover:bg-gray-100">À propos</button>
+            
+          </div>
+        </div>
+        
+        {/* Publications */}
+        <div className="p-4">
+          {/* Créer une publication */}
+          <div className="bg-white rounded-lg shadow p-4 mb-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
+                <img src={userProfile.avatar} alt="Profile" className="w-full h-full object-cover" />
+              </div>
+              <input 
+                type="text" 
+                className="flex-1 bg-gray-100 rounded-full px-4 py-2" 
+                placeholder="Quoi de neuf ?" 
+                onClick={() => setShowPostForm(true)}
+                readOnly
+              />
+            </div>
+            <div className="flex justify-center mt-3 pt-3 border-t">
+              <button 
+                className="flex items-center text-gray-600 hover:bg-gray-100 px-2 py-1 rounded"
+                onClick={() => setShowPostForm(true)}
+              >
+                <svg className="w-5 h-5 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"></path>
+                </svg>
+                Photo/Vidéo
+              </button>
+            </div>
+          </div>
+          
+          {/* Publications */}
+          <div className="space-y-4">
+            {[1, 2, 3].map(id => (
+              <div key={id} className="bg-white rounded-lg shadow p-4">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-10 h-10 rounded-full overflow-hidden">
+                    <img src={userProfile.avatar} alt="Profile" className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <div className="font-medium">{userProfile.name}</div>
+                    <div className="text-xs text-gray-500">il y a {id} jour{id > 1 ? 's' : ''}</div>
+                  </div>
+                </div>
+                
+                {/* Tags colorés */}
+                <div className="mb-3 py-2 border-y border-gray-100">
+                  <div className="flex flex-wrap gap-2">
+                    {id === 1 && (
+                      <>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          Développement
+                        </span>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          Projet
+                        </span>
+                      </>
+                    )}
+                    {id === 2 && (
+                      <>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Randonnée
+                        </span>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          Montagne
+                        </span>
+                      </>
+                    )}
+                    {id === 3 && (
+                      <>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          Meetup
+                        </span>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                          Tech
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                
+                <p className="mb-3">
+                  {id === 1 && "Nouvelle mise à jour du projet ! #coding #webdev"}
+                  {id === 2 && "Belle journée pour une randonnée en montagne. La vue est magnifique !"}
+                  {id === 3 && "Qui est partant pour un meetup tech ce weekend ?"}
+                </p>
+                {id !== 3 && (
+                  <div className="rounded-lg overflow-hidden mb-3">
+                    <img src={`https://via.placeholder.com/600x400?text=Post+${id}`} alt="Post" className="w-full" />
+                  </div>
+                )}
+                <div className="flex justify-between text-sm text-gray-500 mb-2">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
+                    </svg>
+                    <span>{10 + id * 5}</span>
+                  </div>
+                  <div className="flex space-x-4">
+                    <div className="flex items-center space-x-1">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
+                      </svg>
+                      <span>{id * 2}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
+                      </svg>
+                      <span>Partages</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions des posts */}
+                <div className="flex justify-between pt-3 border-t">
+                  <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
+                    <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
+                    </svg>
+                    <span className="text-sm">J'aime</span>
+                  </button>
+                  <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
+                    <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
+                    </svg>
+                    <span className="text-sm">Commenter</span>
+                  </button>
+                  <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
+                    <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
+                    </svg>
+                    <span className="text-sm">Partager</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </main>
   );
 }
+
+
+
+
+
+
+
+
+
