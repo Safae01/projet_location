@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function FollowingList() {
+  const [searchTerm, setSearchTerm] = useState('');
+  
   const following = [
     { id: 1, name: 'Antoine Dupont', avatar: 'https://via.placeholder.com/40', status: 'online' },
     { id: 2, name: 'Marie Laurent', avatar: 'https://via.placeholder.com/40', status: 'offline' },
@@ -12,16 +14,35 @@ export default function FollowingList() {
     { id: 8, name: 'Camille Fournier', avatar: 'https://via.placeholder.com/40', status: 'online' },
   ];
 
+  // Filtrer les personnes suivies en fonction de la recherche
+  const filteredFollowing = following.filter(
+    person => person.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <main className="flex-1 p-4 overflow-y-auto">
       <div className="bg-white rounded-lg shadow">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-gray-800">Personnes que je suis</h2>
-          <div className="text-xs px-2 py-1 bg-red-50 text-red-600 font-medium rounded-full">{following.length}</div>
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <input
+                type="text"
+                className="w-40 px-3 py-1 pl-8 text-sm border rounded-full bg-gray-50"
+                placeholder="Rechercher..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <svg className="w-4 h-4 text-gray-400 absolute left-2 top-1.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"></path>
+              </svg>
+            </div>
+            <div className="text-xs px-2 py-1 bg-red-50 text-red-600 font-medium rounded-full">{following.length}</div>
+          </div>
         </div>
         
         <div className="p-2">
-          {following.map(person => (
+          {filteredFollowing.map(person => (
             <div 
               key={person.id} 
               className="flex items-center p-2 rounded-md hover:bg-gray-50 transition-colors"
@@ -46,8 +67,15 @@ export default function FollowingList() {
               </button>
             </div>
           ))}
+          
+          {filteredFollowing.length === 0 && (
+            <div className="text-center py-4 text-gray-500 text-sm">
+              Aucune personne trouvée
+            </div>
+          )}
         </div>
       </div>
     </main>
   );
 }
+

@@ -42,6 +42,7 @@ export default function Feed() {
       details: {
         postType: 'Maison',
         location: 'Lyon Centre',
+        
         price: '950',
         area: '80',
         durationType: 'monthly'
@@ -120,6 +121,19 @@ export default function Feed() {
     <main className="flex-1 p-4 overflow-y-auto">
       {/* Stories */}
       <div className="flex space-x-2 overflow-x-auto pb-4 mb-4">
+        {/* Option "Ajouter une story" */}
+        <div className="flex-shrink-0 w-32 h-48 rounded-xl bg-gray-100 relative overflow-hidden cursor-pointer hover:bg-gray-200 transition-colors">
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mb-2">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+            </div>
+            <span className="text-sm font-medium text-gray-700">Ajouter une story</span>
+          </div>
+        </div>
+        
+        {/* Stories existantes */}
         {[1, 2, 3, 4, 5, 6].map(i => (
           <div key={i} className="flex-shrink-0 w-32 h-48 rounded-xl bg-gray-300 relative overflow-hidden">
             <img src={`https://via.placeholder.com/150?text=Story${i}`} className="absolute inset-0 w-full h-full object-cover" alt="Story" />
@@ -512,7 +526,7 @@ export default function Feed() {
             
             <div className="p-4 border-t border-gray-100">
               {/* Compteurs */}
-              <div className="flex justify-between text-sm text-gray-500 mb-3">
+              <div className="flex justify-between text-sm text-gray-500 mt-3 mb-3">
                 <div className="flex items-center space-x-1">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
@@ -530,7 +544,7 @@ export default function Feed() {
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
                     </svg>
-                    <span>Partages</span>
+                    <span>{post.shares || 0}</span>
                   </div>
                 </div>
               </div>

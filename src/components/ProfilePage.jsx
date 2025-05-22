@@ -13,6 +13,9 @@ export default function ProfilePage() {
   const [amenities, setAmenities] = useState([]);
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
+  const [activeTab, setActiveTab] = useState('publications');
+  const [searchFollowers, setSearchFollowers] = useState('');
+  const [searchFollowing, setSearchFollowing] = useState('');
   
   const userProfile = {
     name: "Votre Nom",
@@ -26,8 +29,35 @@ export default function ProfilePage() {
       posts: 42,
       followers: 128,
       following: 97
-    }
+    },
+    followers: [
+      { id: 1, name: 'Sophie Lefebvre', avatar: 'https://via.placeholder.com/40', status: 'online' },
+      { id: 2, name: 'Lucas Bernard', avatar: 'https://via.placeholder.com/40', status: 'offline' },
+      { id: 3, name: 'Emma Petit', avatar: 'https://via.placeholder.com/40', status: 'online' },
+      { id: 4, name: 'Hugo Dubois', avatar: 'https://via.placeholder.com/40', status: 'online' },
+      { id: 5, name: 'Léa Moreau', avatar: 'https://via.placeholder.com/40', status: 'offline' },
+      { id: 6, name: 'Gabriel Roux', avatar: 'https://via.placeholder.com/40', status: 'online' },
+      { id: 7, name: 'Camille Martin', avatar: 'https://via.placeholder.com/40', status: 'offline' },
+      { id: 8, name: 'Thomas Dubois', avatar: 'https://via.placeholder.com/40', status: 'online' },
+    ]
   };
+
+  // Données des personnes suivies
+  const following = [
+    { id: 1, name: 'Antoine Dupont', avatar: 'https://via.placeholder.com/40', status: 'online' },
+    { id: 2, name: 'Marie Laurent', avatar: 'https://via.placeholder.com/40', status: 'offline' },
+    { id: 3, name: 'Paul Mercier', avatar: 'https://via.placeholder.com/40', status: 'online' },
+    { id: 4, name: 'Claire Rousseau', avatar: 'https://via.placeholder.com/40', status: 'offline' },
+    { id: 5, name: 'Julien Leroy', avatar: 'https://via.placeholder.com/40', status: 'online' },
+    { id: 6, name: 'Émilie Girard', avatar: 'https://via.placeholder.com/40', status: 'online' },
+    { id: 7, name: 'Thomas Morel', avatar: 'https://via.placeholder.com/40', status: 'offline' },
+    { id: 8, name: 'Camille Fournier', avatar: 'https://via.placeholder.com/40', status: 'online' },
+  ];
+
+  // Filtrer les personnes suivies en fonction de la recherche
+  const filteredFollowing = following.filter(
+    person => person.name.toLowerCase().includes(searchFollowing.toLowerCase())
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -517,155 +547,265 @@ export default function ProfilePage() {
         {/* Navigation du profil */}
         <div className="mt-6 border-t">
           <div className="flex px-4">
-            <button className="px-4 py-3 font-medium text-blue-600 border-b-2 border-blue-600">Publications</button>
-            <button className="px-4 py-3 font-medium text-gray-600 hover:bg-gray-100">abonnés</button>
-            <button className="px-4 py-3 font-medium text-gray-600 hover:bg-gray-100">suivi(e)s</button>
-            <button className="px-4 py-3 font-medium text-gray-600 hover:bg-gray-100">À propos</button>
-            
+            <button 
+              className={`px-4 py-3 font-medium ${activeTab === 'publications' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
+              onClick={() => setActiveTab('publications')}
+            >
+              Publications
+            </button>
+            <button 
+              className={`px-4 py-3 font-medium ${activeTab === 'abonnés' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
+              onClick={() => setActiveTab('abonnés')}
+            >
+              Abonnés
+            </button>
+            <button 
+              className={`px-4 py-3 font-medium ${activeTab === 'suivis' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
+              onClick={() => setActiveTab('suivis')}
+            >
+              Suivi(e)s
+            </button>
+            <button 
+              className={`px-4 py-3 font-medium ${activeTab === 'apropos' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
+              onClick={() => setActiveTab('apropos')}
+            >
+              À propos
+            </button>
           </div>
         </div>
         
-        {/* Publications */}
+        {/* Contenu selon l'onglet actif */}
         <div className="p-4">
-          {/* Créer une publication */}
-          <div className="bg-white rounded-lg shadow p-4 mb-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-                <img src={userProfile.avatar} alt="Profile" className="w-full h-full object-cover" />
-              </div>
-              <input 
-                type="text" 
-                className="flex-1 bg-gray-100 rounded-full px-4 py-2" 
-                placeholder="Quoi de neuf ?" 
-                onClick={() => setShowPostForm(true)}
-                readOnly
-              />
-            </div>
-            <div className="flex justify-center mt-3 pt-3 border-t">
-              <button 
-                className="flex items-center text-gray-600 hover:bg-gray-100 px-2 py-1 rounded"
-                onClick={() => setShowPostForm(true)}
-              >
-                <svg className="w-5 h-5 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"></path>
-                </svg>
-                Photo/Vidéo
-              </button>
-            </div>
-          </div>
-          
-          {/* Publications */}
-          <div className="space-y-4">
-            {[1, 2, 3].map(id => (
-              <div key={id} className="bg-white rounded-lg shadow p-4">
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-10 h-10 rounded-full overflow-hidden">
+          {activeTab === 'publications' && (
+            <>
+              {/* Contenu existant des publications */}
+              <div className="bg-white rounded-lg shadow p-4 mb-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
                     <img src={userProfile.avatar} alt="Profile" className="w-full h-full object-cover" />
                   </div>
-                  <div>
-                    <div className="font-medium">{userProfile.name}</div>
-                    <div className="text-xs text-gray-500">il y a {id} jour{id > 1 ? 's' : ''}</div>
-                  </div>
+                  <input 
+                    type="text" 
+                    className="flex-1 bg-gray-100 rounded-full px-4 py-2" 
+                    placeholder="Quoi de neuf ?" 
+                    onClick={() => setShowPostForm(true)}
+                    readOnly
+                  />
                 </div>
-                
-                {/* Tags colorés */}
-                <div className="mb-3 py-2 border-y border-gray-100">
-                  <div className="flex flex-wrap gap-2">
-                    {id === 1 && (
-                      <>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          Développement
-                        </span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          Projet
-                        </span>
-                      </>
-                    )}
-                    {id === 2 && (
-                      <>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Randonnée
-                        </span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                          Montagne
-                        </span>
-                      </>
-                    )}
-                    {id === 3 && (
-                      <>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          Meetup
-                        </span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                          Tech
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-                
-                <p className="mb-3">
-                  {id === 1 && "Nouvelle mise à jour du projet ! #coding #webdev"}
-                  {id === 2 && "Belle journée pour une randonnée en montagne. La vue est magnifique !"}
-                  {id === 3 && "Qui est partant pour un meetup tech ce weekend ?"}
-                </p>
-                {id !== 3 && (
-                  <div className="rounded-lg overflow-hidden mb-3">
-                    <img src={`https://via.placeholder.com/600x400?text=Post+${id}`} alt="Post" className="w-full" />
-                  </div>
-                )}
-                <div className="flex justify-between text-sm text-gray-500 mb-2">
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
+                <div className="flex justify-center mt-3 pt-3 border-t">
+                  <button 
+                    className="flex items-center text-gray-600 hover:bg-gray-100 px-2 py-1 rounded"
+                    onClick={() => setShowPostForm(true)}
+                  >
+                    <svg className="w-5 h-5 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"></path>
                     </svg>
-                    <span>{10 + id * 5}</span>
-                  </div>
-                  <div className="flex space-x-4">
-                    <div className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
-                      </svg>
-                      <span>{id * 2}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
-                      </svg>
-                      <span>Partages</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Actions des posts */}
-                <div className="flex justify-between pt-3 border-t">
-                  <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                    <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
-                    </svg>
-                    <span className="text-sm">J'aime</span>
-                  </button>
-                  <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                    <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
-                    </svg>
-                    <span className="text-sm">Commenter</span>
-                  </button>
-                  <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                    <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
-                    </svg>
-                    <span className="text-sm">Partager</span>
+                    Photo/Vidéo
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
+              
+              {/* Publications */}
+              <div className="space-y-4">
+                {[1, 2, 3].map(id => (
+                  <div key={id} className="bg-white rounded-lg shadow p-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden">
+                        <img src={userProfile.avatar} alt="Profile" className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                        <div className="font-medium">{userProfile.name}</div>
+                        <div className="text-xs text-gray-500">il y a {id} jour{id > 1 ? 's' : ''}</div>
+                      </div>
+                    </div>
+                    
+                    {/* Tags colorés - déplacés au-dessus du contenu */}
+                    <div className="mb-3 py-2 border-y border-gray-100">
+                      <div className="flex flex-wrap gap-2">
+                        {id === 1 && (
+                          <>
+                            <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">#coding</span>
+                            <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">#webdev</span>
+                          </>
+                        )}
+                        {id === 2 && (
+                          <>
+                            <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">#nature</span>
+                            <span className="px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">#randonnée</span>
+                          </>
+                        )}
+                        {id === 3 && (
+                          <>
+                            <span className="px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">#tech</span>
+                            <span className="px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">#meetup</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <p className="mb-3">
+                      {id === 1 && "Nouvelle mise à jour du projet ! #coding #webdev"}
+                      {id === 2 && "Belle journée pour une randonnée en montagne. La vue est magnifique !"}
+                      {id === 3 && "Qui est partant pour un meetup tech ce weekend ?"}
+                    </p>
+                    {id !== 3 && (
+                      <div className="rounded-lg overflow-hidden mb-3">
+                        <img src={`https://via.placeholder.com/600x400?text=Post+${id}`} alt="Post" className="w-full" />
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm text-gray-500 mb-2">
+                      <div className="flex items-center">
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
+                        </svg>
+                        <span>{10 + id * 5}</span>
+                      </div>
+                      <div className="flex space-x-4">
+                        <div className="flex items-center space-x-1">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
+                          </svg>
+                          <span>{3 + id}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
+                          </svg>
+                          <span>{id * 2}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions des posts */}
+                    <div className="flex justify-between pt-3 border-t">
+                      <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
+                        <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
+                        </svg>
+                        <span className="text-sm">J'aime</span>
+                      </button>
+                      <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
+                        <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
+                        </svg>
+                        <span className="text-sm">Commenter</span>
+                      </button>
+                      <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
+                        <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
+                        </svg>
+                        <span className="text-sm">Partager</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          
+          {activeTab === 'abonnés' && (
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-4 border-b">
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    className="w-full px-4 py-2 pl-10 border rounded-lg bg-gray-100" 
+                    placeholder="Rechercher parmi les abonnés" 
+                    value={searchFollowers}
+                    onChange={(e) => setSearchFollowers(e.target.value)}
+                  />
+                  <svg className="w-5 h-5 text-gray-500 absolute left-3 top-2.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"></path>
+                  </svg>
+                </div>
+              </div>
+              
+              <div className="p-2">
+                {userProfile.followers
+                  .filter(follower => follower.name.toLowerCase().includes(searchFollowers.toLowerCase()))
+                  .map(follower => (
+                  <div 
+                    key={follower.id} 
+                    className="flex items-center p-2 rounded-md hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="relative mr-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-blue-100">
+                        <img src={follower.avatar} alt={follower.name} className="w-full h-full object-cover" />
+                      </div>
+                      {follower.status === 'online' && (
+                        <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white"></div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm text-gray-800 truncate">{follower.name}</div>
+                      <div className="text-xs text-gray-500 flex items-center">
+                        <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1 ${follower.status === 'online' ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+                        {follower.status === 'online' ? 'En ligne' : 'Hors ligne'}
+                      </div>
+                    </div>
+                    <button className="ml-2 bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-medium hover:bg-blue-100 transition-colors">
+                      Suivre
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {activeTab === 'suivis' && (
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-4 border-b">
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    className="w-full px-4 py-2 pl-10 border rounded-lg bg-gray-100" 
+                    placeholder="Rechercher parmi les personnes suivies" 
+                    value={searchFollowing}
+                    onChange={(e) => setSearchFollowing(e.target.value)}
+                  />
+                  <svg className="w-5 h-5 text-gray-500 absolute left-3 top-2.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"></path>
+                  </svg>
+                </div>
+              </div>
+              
+              <div className="p-2">
+                {filteredFollowing.map(person => (
+                  <div 
+                    key={person.id} 
+                    className="flex items-center p-2 rounded-md hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="relative mr-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-red-100">
+                        <img src={person.avatar} alt={person.name} className="w-full h-full object-cover" />
+                      </div>
+                      {person.status === 'online' && (
+                        <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white"></div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm text-gray-800 truncate">{person.name}</div>
+                      <div className="text-xs text-gray-500 flex items-center">
+                        <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1 ${person.status === 'online' ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+                        {person.status === 'online' ? 'En ligne' : 'Hors ligne'}
+                      </div>
+                    </div>
+                    <button className="ml-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-medium hover:bg-red-100 transition-colors">
+                      Ne plus suivre
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Autres onglets... */}
         </div>
       </div>
     </main>
   );
 }
+
 
 
 
