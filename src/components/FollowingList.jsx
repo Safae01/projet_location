@@ -1,23 +1,62 @@
 import React, { useState } from 'react';
+import UserProfile from './UserProfile';
 
 export default function FollowingList() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
   
   const following = [
-    { id: 1, name: 'Antoine Dupont', avatar: 'https://via.placeholder.com/40', status: 'online' },
-    { id: 2, name: 'Marie Laurent', avatar: 'https://via.placeholder.com/40', status: 'offline' },
-    { id: 3, name: 'Paul Mercier', avatar: 'https://via.placeholder.com/40', status: 'online' },
-    { id: 4, name: 'Claire Rousseau', avatar: 'https://via.placeholder.com/40', status: 'offline' },
-    { id: 5, name: 'Julien Leroy', avatar: 'https://via.placeholder.com/40', status: 'online' },
-    { id: 6, name: 'Émilie Girard', avatar: 'https://via.placeholder.com/40', status: 'online' },
-    { id: 7, name: 'Thomas Morel', avatar: 'https://via.placeholder.com/40', status: 'offline' },
-    { id: 8, name: 'Camille Fournier', avatar: 'https://via.placeholder.com/40', status: 'online' },
+    { 
+      id: 1, 
+      name: 'Antoine Dupont', 
+      avatar: 'https://via.placeholder.com/40', 
+      status: 'online',
+      username: '@antoine_d',
+      bio: 'Passionné de technologie et de sport',
+      posts: [
+        { id: 1, content: 'Belle journée pour coder !', image: 'https://via.placeholder.com/600x400?text=Post+1', likes: 24, comments: 5, time: 'il y a 2h' },
+        { id: 2, content: 'Nouveau projet en cours #coding #webdev', image: 'https://via.placeholder.com/600x400?text=Post+2', likes: 18, comments: 3, time: 'il y a 2j' }
+      ]
+    },
+    { 
+      id: 2, 
+      name: 'Marie Laurent', 
+      avatar: 'https://via.placeholder.com/40', 
+      status: 'offline',
+      username: '@marie_l',
+      bio: 'Designer UX/UI | Amoureuse de la nature',
+      posts: [
+        { id: 1, content: 'Mon dernier design pour une application mobile', image: 'https://via.placeholder.com/600x400?text=Design', likes: 45, comments: 12, time: 'il y a 1j' },
+        { id: 2, content: 'Randonnée du weekend #nature', image: 'https://via.placeholder.com/600x400?text=Nature', likes: 32, comments: 8, time: 'il y a 5j' }
+      ]
+    },
+    // Autres utilisateurs avec leurs données...
+    { id: 3, name: 'Paul Mercier', avatar: 'https://via.placeholder.com/40', status: 'online', username: '@paul_m', bio: 'Développeur web', posts: [] },
+    { id: 4, name: 'Claire Rousseau', avatar: 'https://via.placeholder.com/40', status: 'offline', username: '@claire_r', bio: 'Photographe amateur', posts: [] },
+    { id: 5, name: 'Julien Leroy', avatar: 'https://via.placeholder.com/40', status: 'online', username: '@julien_l', bio: 'Entrepreneur', posts: [] },
+    { id: 6, name: 'Émilie Girard', avatar: 'https://via.placeholder.com/40', status: 'online', username: '@emilie_g', bio: 'Marketing digital', posts: [] },
+    { id: 7, name: 'Thomas Morel', avatar: 'https://via.placeholder.com/40', status: 'offline', username: '@thomas_m', bio: 'Étudiant en informatique', posts: [] },
+    { id: 8, name: 'Camille Fournier', avatar: 'https://via.placeholder.com/40', status: 'online', username: '@camille_f', bio: 'Voyageuse | Blogueuse', posts: [] },
   ];
 
   // Filtrer les personnes suivies en fonction de la recherche
   const filteredFollowing = following.filter(
     person => person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Fonction pour afficher le profil d'un utilisateur
+  const showUserProfile = (user) => {
+    setSelectedUser(user);
+  };
+
+  // Fonction pour revenir à la liste des personnes suivies
+  const backToList = () => {
+    setSelectedUser(null);
+  };
+
+  if (selectedUser) {
+    return <UserProfile user={selectedUser} onBack={backToList} />;
+  }
 
   return (
     <main className="flex-1 p-4 overflow-y-auto">
@@ -45,7 +84,8 @@ export default function FollowingList() {
           {filteredFollowing.map(person => (
             <div 
               key={person.id} 
-              className="flex items-center p-2 rounded-md hover:bg-gray-50 transition-colors"
+              className="flex items-center p-2 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
+              onClick={() => showUserProfile(person)}
             >
               <div className="relative mr-3">
                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-red-100">
@@ -62,7 +102,12 @@ export default function FollowingList() {
                   {person.status === 'online' ? 'En ligne' : 'Hors ligne'}
                 </div>
               </div>
-              <button className="ml-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-medium hover:bg-red-100 transition-colors">
+              <button 
+                className="ml-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-medium hover:bg-red-100 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation(); // Empêche le déclenchement du onClick du parent
+                }}
+              >
                 Ne plus suivre
               </button>
             </div>
@@ -78,4 +123,5 @@ export default function FollowingList() {
     </main>
   );
 }
+
 

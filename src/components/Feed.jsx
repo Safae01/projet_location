@@ -2,23 +2,17 @@ import React, { useState } from 'react';
 
 export default function Feed() {
   const [showPostForm, setShowPostForm] = useState(false);
-  const [postType, setPostType] = useState('');
-  const [location, setLocation] = useState('');
-  const [durationType, setDurationType] = useState('');
-  const [price, setPrice] = useState('');
-  const [area, setArea] = useState('');
-  const [rooms, setRooms] = useState('');
-  const [furnishingStatus, setFurnishingStatus] = useState('');
   const [amenities, setAmenities] = useState([]);
   const [images, setImages] = useState([]);
-  const [video, setVideo] = useState(null);
+  const [showComments, setShowComments] = useState({});
+  
   const [posts, setPosts] = useState([
     {
       id: 1,
-      author: 'Marie Dupont',
+      author: 'Julie Dubois',
       avatar: 'https://via.placeholder.com/40',
       time: 'il y a 2h',
-      content: 'Bonjour à tous ! Voici une photo de mon dernier voyage.',
+      content: 'Appartement à louer dans le 7ème arrondissement. Proche des transports et des commerces.',
       image: 'https://via.placeholder.com/600x400',
       likes: 42,
       comments: 8,
@@ -42,7 +36,6 @@ export default function Feed() {
       details: {
         postType: 'Maison',
         location: 'Lyon Centre',
-        
         price: '950',
         area: '80',
         durationType: 'monthly'
@@ -60,61 +53,28 @@ export default function Feed() {
 
   const handleImageUpload = (e) => {
     // Simuler l'upload d'images
-    if (e.target.files) {
-      const newImages = Array.from(e.target.files).map(file => URL.createObjectURL(file));
-      setImages([...images, ...newImages]);
-    }
-  };
-
-  const handleVideoUpload = (e) => {
-    // Simuler l'upload de vidéo
-    if (e.target.files && e.target.files[0]) {
-      setVideo(URL.createObjectURL(e.target.files[0]));
-    }
+    const files = Array.from(e.target.files);
+    const newImages = files.map(file => URL.createObjectURL(file));
+    setImages([...images, ...newImages]);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Créer une nouvelle annonce
-    const newPost = {
-      id: Date.now(), // Utiliser timestamp comme ID unique
-      author: 'Votre Nom', // Remplacer par le nom de l'utilisateur connecté
-      avatar: 'https://via.placeholder.com/40',
-      time: 'à l\'instant',
-      content: `${postType} à ${location} - ${price}€/mois - ${area}m² - ${rooms} pièces - ${furnishingStatus === 'equipped' ? 'Meublé' : 'Non meublé'}`,
-      image: images.length > 0 ? images[0] : null,
-      video: video,
-      likes: 0,
-      comments: 0,
-      // Ajouter les détails spécifiques à l'annonce
-      details: {
-        postType,
-        location,
-        durationType,
-        price,
-        area,
-        rooms,
-        furnishingStatus,
-        amenities
-      }
-    };
-    
-    // Ajouter le nouveau post au début de la liste
-    setPosts([newPost, ...posts]);
-    
-    // Réinitialiser le formulaire
+    // Logique pour soumettre le formulaire
+    console.log('Formulaire soumis');
     setShowPostForm(false);
-    setPostType('');
-    setLocation('');
-    setDurationType('');
-    setPrice('');
-    setArea('');
-    setRooms('');
-    setFurnishingStatus('');
-    setAmenities([]);
-    setImages([]);
-    setVideo(null);
+  };
+
+  const handleSavePost = (postId) => {
+    console.log('Post sauvegardé:', postId);
+    // Logique pour sauvegarder un post
+  };
+
+  const toggleComments = (postId) => {
+    setShowComments(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
   };
 
   return (
@@ -134,13 +94,15 @@ export default function Feed() {
         </div>
         
         {/* Stories existantes */}
-        {[1, 2, 3, 4, 5, 6].map(i => (
-          <div key={i} className="flex-shrink-0 w-32 h-48 rounded-xl bg-gray-300 relative overflow-hidden">
-            <img src={`https://via.placeholder.com/150?text=Story${i}`} className="absolute inset-0 w-full h-full object-cover" alt="Story" />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-              <div className="text-white text-xs font-medium">Histoire {i}</div>
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div key={index} className="flex-shrink-0 w-32 h-48 rounded-xl bg-gray-300 relative overflow-hidden cursor-pointer">
+            <img src={`https://via.placeholder.com/150?text=Story${index + 1}`} alt={`Story ${index + 1}`} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black to-transparent">
+              <div className="text-white text-xs font-medium truncate">Utilisateur {index + 1}</div>
             </div>
-            <div className="absolute top-2 left-2 w-8 h-8 rounded-full border-4 border-blue-500 bg-gray-200"></div>
+            <div className="absolute top-2 left-2 w-8 h-8 rounded-full border-2 border-blue-500 overflow-hidden">
+              <img src={`https://via.placeholder.com/40?text=U${index + 1}`} alt={`User ${index + 1}`} className="w-full h-full object-cover" />
+            </div>
           </div>
         ))}
       </div>
@@ -163,28 +125,28 @@ export default function Feed() {
             className="flex items-center space-x-1 text-gray-600 hover:bg-gray-100 px-2 py-1 rounded"
             onClick={() => setShowPostForm(true)}
           >
-            <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4a.5.5 0 01-.5-.5V5.5A.5.5 0 014 5h12a.5.5 0 01.5.5v9.5a.5.5 0 01-.5.5z" clipRule="evenodd"></path></svg>
-            <span>Photo/Vidéo</span>
+            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+            <span>Annonce immobilière</span>
           </button>
         </div>
-        
       </div>
 
-      {/* Post Form Modal */}
+      {/* Modal pour créer un post */}
       {showPostForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl max-h-[80vh] overflow-y-auto">
-            {/* En-tête */}
-            <div className="p-5 border-b border-gray-200 sticky top-0 bg-white z-10">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">Créer une annonce immobilière</h2>
-                <button 
-                  className="text-gray-500 hover:text-gray-700 transition-colors rounded-full p-1 hover:bg-gray-100"
-                  onClick={() => setShowPostForm(false)}
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-              </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-semibold">Créer une annonce immobilière</h2>
+              <button 
+                onClick={() => setShowPostForm(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6">
@@ -199,198 +161,141 @@ export default function Feed() {
                     <div className="font-semibold text-gray-800 flex items-center">
                       Votre Nom
                       <svg className="w-5 h-5 text-blue-500 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                       </svg>
                     </div>
-                    <div className="text-sm text-blue-600">Compte vérifié</div>
+                    <div className="text-sm text-gray-500">Visible par tous</div>
                   </div>
                 </div>
                 
-                {/* Type de bien */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Type de bien</label>
-                  <div className="relative">
-                    <select 
-                      className="w-full pl-3 pr-10 py-3 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 appearance-none transition-colors hover:border-blue-300"
-                      value={postType}
-                      onChange={(e) => setPostType(e.target.value)}
-                      required
-                    >
-                      <option value="">Sélectionnez un type</option>
-                      <option value="maison">Maison</option>
-                      <option value="appartement">Appartement</option>
-                      <option value="chambre">Chambre</option>
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                      </svg>
-                    </div>
+                {/* Type d'annonce */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Type d'annonce</label>
+                  <div className="flex space-x-2">
+                    <button type="button" className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg">Location</button>
+                    <button type="button" className="flex-1 py-2 px-4 bg-gray-200 text-gray-700 rounded-lg">Vente</button>
+                    <button type="button" className="flex-1 py-2 px-4 bg-gray-200 text-gray-700 rounded-lg">Colocation</button>
                   </div>
+                </div>
+                
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <textarea 
+                    className="w-full border border-gray-300 rounded-lg p-3 h-32 resize-none focus:ring-blue-500 focus:border-blue-500" 
+                    placeholder="Décrivez votre bien immobilier..."
+                  ></textarea>
                 </div>
                 
                 {/* Localisation */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Localisation (ville, quartier)</label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Localisation</label>
                   <input 
                     type="text" 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 transition-colors hover:border-blue-300"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Ex: Paris 11ème, Bastille"
-                    required
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500" 
+                    placeholder="Adresse du bien"
                   />
                 </div>
                 
-                {/* Durée */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Type de location</label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <label className={`relative flex items-center p-3 rounded-xl border ${durationType === 'courte' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'} cursor-pointer hover:border-blue-300 transition-colors`}>
+                {/* Prix et surface */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Prix</label>
+                    <div className="relative">
                       <input 
-                        type="radio" 
-                        name="durationType" 
-                        value="courte" 
-                        checked={durationType === 'courte'}
-                        onChange={() => setDurationType('courte')}
-                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        type="number" 
+                        className="w-full border border-gray-300 rounded-lg p-3 pr-12 focus:ring-blue-500 focus:border-blue-500" 
+                        placeholder="Prix"
                       />
-                      <span className="ml-3 text-gray-700">Courte durée</span>
-                    </label>
-                    <label className={`relative flex items-center p-3 rounded-xl border ${durationType === 'longue' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'} cursor-pointer hover:border-blue-300 transition-colors`}>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <span className="text-gray-500">€/mois</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Surface</label>
+                    <div className="relative">
                       <input 
-                        type="radio" 
-                        name="durationType" 
-                        value="longue" 
-                        checked={durationType === 'longue'}
-                        onChange={() => setDurationType('longue')}
-                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        type="number" 
+                        className="w-full border border-gray-300 rounded-lg p-3 pr-12 focus:ring-blue-500 focus:border-blue-500" 
+                        placeholder="Surface"
                       />
-                      <span className="ml-3 text-gray-700">Longue durée</span>
-                    </label>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <span className="text-gray-500">m²</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Prix */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Prix (€/mois)</label>
-                  <input 
-                    type="number" 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 transition-colors hover:border-blue-300"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="Ex: 800"
-                    required
-                  />
-                </div>
-                
-                {/* Surface */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Surface (m²)</label>
-                  <input 
-                    type="number" 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 transition-colors hover:border-blue-300"
-                    value={area}
-                    onChange={(e) => setArea(e.target.value)}
-                    placeholder="Ex: 45"
-                    required
-                  />
-                </div>
-                
-                {/* Nombre de pièces */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Nombre de pièces</label>
-                  <input 
-                    type="number" 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 transition-colors hover:border-blue-300"
-                    value={rooms}
-                    onChange={(e) => setRooms(e.target.value)}
-                    placeholder="Ex: 3"
-                    required
-                  />
-                </div>
-                
-                {/* Équipé ou non */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">État du bien</label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <label className={`relative flex items-center p-4 rounded-xl border ${furnishingStatus === 'equipped' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'} cursor-pointer hover:border-blue-300 transition-colors`}>
-                      <input 
-                        type="radio" 
-                        name="furnishingStatus" 
-                        value="equipped" 
-                        checked={furnishingStatus === 'equipped'}
-                        onChange={() => setFurnishingStatus('equipped')}
-                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
-                        required
-                      />
-                      <div className="ml-3">
-                        <span className="block text-sm font-medium text-gray-700">Équipé/Meublé</span>
-                        <span className="block text-xs text-gray-500">Prêt à emménager</span>
-                      </div>
-                    </label>
-                    <label className={`relative flex items-center p-4 rounded-xl border ${furnishingStatus === 'notEquipped' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'} cursor-pointer hover:border-blue-300 transition-colors`}>
-                      <input 
-                        type="radio" 
-                        name="furnishingStatus" 
-                        value="notEquipped" 
-                        checked={furnishingStatus === 'notEquipped'}
-                        onChange={() => setFurnishingStatus('notEquipped')}
-                        className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500"
-                      />
-                      <div className="ml-3">
-                        <span className="block text-sm font-medium text-gray-700">Non équipé/Non meublé</span>
-                        <span className="block text-xs text-gray-500">À aménager</span>
-                      </div>
-                    </label>
+                {/* Nombre de pièces et état */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de pièces</label>
+                    <select className="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500">
+                      <option>Studio</option>
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5+</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">État du bien</label>
+                    <select className="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500">
+                      <option>Meublé</option>
+                      <option>Non meublé</option>
+                      <option>Neuf</option>
+                      <option>Rénové</option>
+                      <option>À rénover</option>
+                    </select>
                   </div>
                 </div>
                 
                 {/* Équipements */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-700">Équipements disponibles</label>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-blue-200 transition-colors">
-                    <div className="grid grid-cols-2 gap-3">
-                      {['Wi-Fi', 'Cuisine équipée', 'Lave-linge', 'Sèche-linge', 'Parking', 'Balcon', 'Terrasse', 'Ascenseur'].map(amenity => (
-                        <label key={amenity} className="inline-flex items-center p-2 rounded-lg hover:bg-blue-50 transition-colors">
-                          <input 
-                            type="checkbox" 
-                            className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                            checked={amenities.includes(amenity)}
-                            onChange={() => handleAmenityToggle(amenity)}
-                          />
-                          <span className="ml-2 text-gray-700">{amenity}</span>
-                        </label>
-                      ))}
-                    </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Équipements</label>
+                  <div className="flex flex-wrap gap-2">
+                    {['Ascenseur', 'Parking', 'Balcon', 'Terrasse', 'Jardin', 'Piscine', 'Climatisation', 'Internet'].map(amenity => (
+                      <button
+                        key={amenity}
+                        type="button"
+                        onClick={() => handleAmenityToggle(amenity)}
+                        className={`px-3 py-1 rounded-full text-sm ${
+                          amenities.includes(amenity) 
+                            ? 'bg-blue-100 text-blue-800 border border-blue-300' 
+                            : 'bg-gray-100 text-gray-800 border border-gray-200'
+                        }`}
+                      >
+                        {amenity}
+                      </button>
+                    ))}
                   </div>
                 </div>
                 
-                {/* Images */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-700">Images (obligatoire)</label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-blue-400 transition-colors">
-                    <div className="space-y-1 text-center">
-                      <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                {/* Photos et vidéos */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Photos et vidéos</label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,video/*"
+                      className="hidden"
+                      id="file-upload"
+                      onChange={handleImageUpload}
+                    />
+                    <label htmlFor="file-upload" className="cursor-pointer">
+                      <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                       </svg>
-                      <div className="flex text-sm text-gray-600">
-                        <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                          <span>Télécharger des fichiers</span>
-                          <input 
-                            id="file-upload" 
-                            name="file-upload" 
-                            type="file" 
-                            className="sr-only" 
-                            multiple
-                            onChange={handleImageUpload}
-                            accept="image/*"
-                          />
-                        </label>
-                        <p className="pl-1">ou glisser-déposer</p>
-                      </div>
-                      <p className="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
-                    </div>
+                      <p className="mt-1 text-sm text-gray-600">
+                        Cliquez pour ajouter des photos ou vidéos
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        PNG, JPG, GIF, MP4 jusqu'à 10MB
+                      </p>
+                    </label>
                   </div>
                   
                   {/* Aperçu des images */}
@@ -405,7 +310,9 @@ export default function Feed() {
                               className="opacity-0 group-hover:opacity-100 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none transition-opacity"
                               onClick={() => setImages(images.filter((_, i) => i !== index))}
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                              </svg>
                             </button>
                           </div>
                         </div>
@@ -413,50 +320,22 @@ export default function Feed() {
                     </div>
                   )}
                 </div>
-                
-                {/* Vidéo */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Vidéo (obligatoire)</label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed hover:border-blue-400 rounded-md">
-                    <div className="space-y-1 text-center">
-                      <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                      <div className="flex text-sm text-gray-600">
-                        <label htmlFor="video-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                          <span>Télécharger une vidéo</span>
-                          <input id="video-upload" name="video-upload" type="file" className="sr-only" accept="video/*" onChange={handleVideoUpload} required={!video} />
-                        </label>
-                        <p className="pl-1">ou glisser-déposer</p>
-                      </div>
-                      <p className="text-xs text-gray-500">MP4, MOV jusqu'à 100MB</p>
-                    </div>
-                  </div>
-                  {video && (
-                    <div className="mt-2 relative">
-                      <video src={video} controls className="w-full h-48 object-cover rounded"></video>
-                      <button 
-                        type="button"
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                        onClick={() => setVideo(null)}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                      </button>
-                    </div>
-                  )}
-                </div>
-                
-                
-                
-                {/* Boutons d'action */}
-                <div className="flex justify-center space-x-3 pt-6 border-t border-gray-200">
-                  <button 
-                    type="submit" 
-                    className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    Publier
-                  </button>
-                </div>
+              </div>
+              
+              <div className="flex justify-end space-x-3 border-t pt-4">
+                <button 
+                  type="button" 
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  onClick={() => setShowPostForm(false)}
+                >
+                  Annuler
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Publier
+                </button>
               </div>
             </form>
           </div>
@@ -524,53 +403,76 @@ export default function Feed() {
               </div>
             )}
             
-            <div className="p-4 border-t border-gray-100">
-              {/* Compteurs */}
-              <div className="flex justify-between text-sm text-gray-500 mt-3 mb-3">
-                <div className="flex items-center space-x-1">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
-                  </svg>
-                  <span>{post.likes}</span>
-                </div>
+            <div className="px-4 py-2 border-t border-gray-100">
+              <div className="flex justify-between">
                 <div className="flex space-x-4">
-                  <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
+                  <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-600">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                    <span>{post.likes}</span>
+                  </button>
+                  <button 
+                    className="flex items-center space-x-1 text-gray-500 hover:text-blue-600"
+                    onClick={() => toggleComments(post.id)}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                     </svg>
                     <span>{post.comments}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
-                    </svg>
-                    <span>{post.shares || 0}</span>
-                  </div>
+                  </button>
                 </div>
-              </div>
-              
-              {/* Boutons d'action */}
-              <div className="flex justify-between border-t pt-3">
-                <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                  <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
+                <button className="text-gray-500 hover:text-blue-600">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
                   </svg>
-                  <span className="text-sm">J'aime</span>
-                </button>
-                <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                  <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
-                  </svg>
-                  <span className="text-sm">Commenter</span>
-                </button>
-                <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                  <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
-                  </svg>
-                  <span className="text-sm">Partager</span>
                 </button>
               </div>
             </div>
+            
+            {/* Section commentaires */}
+            {showComments[post.id] && (
+              <div className="bg-gray-50 p-4 border-t">
+                <div className="mb-4 space-y-3">
+                  <div className="flex items-start space-x-2">
+                    <div className="w-8 h-8 rounded-full overflow-hidden">
+                      <img src="https://via.placeholder.com/40?text=User1" alt="Commentateur" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 bg-white rounded-lg p-2 shadow-sm">
+                      <div className="font-medium text-xs">Utilisateur 1</div>
+                      <p className="text-sm">Super photo ! J'adore le cadrage.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-8 h-8 rounded-full overflow-hidden">
+                      <img src="https://via.placeholder.com/40?text=User2" alt="Commentateur" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 bg-white rounded-lg p-2 shadow-sm">
+                      <div className="font-medium text-xs">Utilisateur 2</div>
+                      <p className="text-sm">Très beau contenu, continue comme ça !</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 rounded-full overflow-hidden">
+                    <img src="https://via.placeholder.com/40?text=You" alt="Vous" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 relative">
+                    <input 
+                      type="text" 
+                      className="w-full border rounded-full py-1 px-3 pr-10 text-sm" 
+                      placeholder="Ajouter un commentaire..." 
+                    />
+                    <button className="absolute right-2 top-1 text-blue-500">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

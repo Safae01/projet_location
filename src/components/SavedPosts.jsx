@@ -1,30 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function SavedPosts() {
-  const savedPosts = [
+  const [savedPosts, setSavedPosts] = useState([
     {
       id: 1,
-      author: "Marie Dupont",
+      author: "Jean Dupont",
       avatar: "https://via.placeholder.com/40",
       time: "Enregistré le 15 mai 2023",
-      content: "Superbe appartement avec vue sur la Tour Eiffel ! Idéal pour un couple, entièrement rénové et meublé.",
+      content: "Appartement lumineux avec vue sur la Seine. Disponible à partir du 1er juin.",
       image: "https://via.placeholder.com/600x400",
       likes: 245,
-      comments: 37,
+      comments: 32,
       details: {
         postType: "Location",
-        location: "Paris 7ème",
-        durationType: "long-term",
+        location: "Paris 16ème",
+        durationType: "monthly",
         price: "1800",
         area: "65",
-        rooms: "2",
-        furnishingStatus: "equipped",
-        amenities: ["Balcon", "Ascenseur", "Parking"]
+        rooms: "3",
+        furnishingStatus: "furnished",
+        amenities: ["Balcon", "Parking", "Ascenseur"]
       }
     },
     {
       id: 2,
-      author: "Thomas Martin",
+      author: "Marie Lefebvre",
       avatar: "https://via.placeholder.com/40",
       time: "Enregistré le 10 mai 2023",
       content: "Studio disponible immédiatement dans le quartier du Marais. Idéal pour étudiant ou jeune actif.",
@@ -62,11 +62,21 @@ export default function SavedPosts() {
         amenities: ["Jardin", "Garage", "Cave"]
       }
     }
-  ];
+  ]);
+
+  const [showComments, setShowComments] = useState({});
+
+  const toggleComments = (postId) => {
+    setShowComments(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
+  };
 
   const handleRemoveSavedPost = (id) => {
     console.log(`Retirer le post ${id} des enregistrements`);
     // Logique pour retirer un post des enregistrements
+    setSavedPosts(prevPosts => prevPosts.filter(post => post.id !== id));
   };
 
   return (
@@ -143,53 +153,76 @@ export default function SavedPosts() {
                   </div>
                 )}
                 
-                <div className="p-4 border-t border-gray-100">
-              {/* Compteurs */}
-              <div className="flex justify-between text-sm text-gray-500 mt-3 mb-3">
-                <div className="flex items-center space-x-1">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
-                  </svg>
-                  <span>{post.likes}</span>
-                </div>
-                <div className="flex space-x-4">
-                  <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
-                    </svg>
-                    <span>{post.comments}</span>
+                <div className="px-4 py-2 border-t border-gray-100">
+                  <div className="flex justify-between">
+                    <div className="flex space-x-4">
+                      <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-600">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                        <span>{post.likes}</span>
+                      </button>
+                      <button 
+                        className="flex items-center space-x-1 text-gray-500 hover:text-blue-600"
+                        onClick={() => toggleComments(post.id)}
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <span>{post.comments}</span>
+                      </button>
+                    </div>
+                    <button className="text-gray-500 hover:text-blue-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                      </svg>
+                    </button>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
-                    </svg>
-                    <span>{post.shares || 0}</span>
-                  </div>
                 </div>
-              </div>
-              
-              {/* Boutons d'action */}
-              <div className="flex justify-between border-t pt-3">
-                <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                  <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
-                  </svg>
-                  <span className="text-sm">J'aime</span>
-                </button>
-                <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                  <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd"></path>
-                  </svg>
-                  <span className="text-sm">Commenter</span>
-                </button>
-                <button className="flex-1 flex flex-col items-center text-gray-600 hover:text-blue-600">
-                  <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
-                  </svg>
-                  <span className="text-sm">Partager</span>
-                </button>
-              </div>
-            </div>
+                
+                {/* Section commentaires */}
+                {showComments[post.id] && (
+                  <div className="bg-gray-50 p-4 border-t">
+                    <div className="mb-4 space-y-3">
+                      <div className="flex items-start space-x-2">
+                        <div className="w-8 h-8 rounded-full overflow-hidden">
+                          <img src="https://via.placeholder.com/40?text=User1" alt="Commentateur" className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex-1 bg-white rounded-lg p-2 shadow-sm">
+                          <div className="font-medium text-xs">Utilisateur 1</div>
+                          <p className="text-sm">Super photo ! J'adore le cadrage.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-2">
+                        <div className="w-8 h-8 rounded-full overflow-hidden">
+                          <img src="https://via.placeholder.com/40?text=User2" alt="Commentateur" className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex-1 bg-white rounded-lg p-2 shadow-sm">
+                          <div className="font-medium text-xs">Utilisateur 2</div>
+                          <p className="text-sm">Très beau contenu, continue comme ça !</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 rounded-full overflow-hidden">
+                        <img src="https://via.placeholder.com/40?text=You" alt="Vous" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 relative">
+                        <input 
+                          type="text" 
+                          className="w-full border rounded-full py-1 px-3 pr-10 text-sm" 
+                          placeholder="Ajouter un commentaire..." 
+                        />
+                        <button className="absolute right-2 top-1 text-blue-500">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -198,6 +231,7 @@ export default function SavedPosts() {
     </main>
   );
 }
+
 
 
 

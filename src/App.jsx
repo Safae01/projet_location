@@ -10,6 +10,7 @@ import VideoReels from './components/VideoReels';
 import SavedPosts from './components/SavedPosts';
 import Recommendations from './components/Recommendations';
 import ProfilePage from './components/ProfilePage';
+import UserProfile from './components/UserProfile';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('feed');
